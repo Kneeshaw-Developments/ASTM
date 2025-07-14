@@ -29,12 +29,14 @@ public class McqPromptUI : MonoBehaviour
     {
         foreach (Option option in _options)
         {
-            option.IBtn.onClick.RemoveAllListeners();
-            option.IBtn.onClick.AddListener(() => { OptionBtn_fn(option); });
+            option.IToggle.onValueChanged.RemoveAllListeners();
+            option.IToggle.onValueChanged.AddListener((value) => { OptionBtn_fn(option, value); });
         }
     }
-    private void OptionBtn_fn(Option option)
+    private void OptionBtn_fn(Option option, bool value)
     {
+        if (!value) return;
+
         bool correct = option.ICorrect;
 
         _correctObj.SetActive(correct);
@@ -62,6 +64,6 @@ public class McqPromptUI : MonoBehaviour
 [System.Serializable]
 public class Option
 {
-    public Button IBtn;
+    public Toggle IToggle;
     public bool ICorrect = false;
 }
