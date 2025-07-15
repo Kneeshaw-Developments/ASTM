@@ -35,21 +35,28 @@ public class McqPromptUI : MonoBehaviour
     }
     private void OptionBtn_fn(Option option, bool value)
     {
-        if (!value) return;
+        _wrongObj.GetComponent<RectTransform>().localScale = new Vector3(1, 0, 1);
+        _wrongObj.SetActive(false);
+        _correctObj.SetActive(false);
+
+        if (!value)
+        {
+            return;
+        }
 
         bool correct = option.ICorrect;
 
         _correctObj.SetActive(correct);
         _wrongObj.SetActive(!correct);
-
-        LeanTween.delayedCall(3, () =>
+        
+        if (correct)
         {
-            _correctObj.SetActive(false);
-            _wrongObj.SetActive(false);
-
-            if (correct)
+            _correctObj.GetComponent<Button>().onClick.AddListener(MoveToSamplingSequence);
+            LeanTween.delayedCall(3, () =>
+            {
                 MoveToSamplingSequence();
-        });
+            });
+        }
     }
 
     #endregion

@@ -289,6 +289,7 @@ public class UiController : MonoBehaviour
     public void DeactivateErrorSampleUI()
     {
         _errorSamplingUI.SetActive(false);
+        _errorSamplingUI.GetComponent<CanvasGroup>().alpha = 0;
     }
 
 }

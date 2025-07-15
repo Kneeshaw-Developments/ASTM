@@ -89,7 +89,14 @@ public class SamplingUI : MonoBehaviour
 
         _loaderBucket.MovementInput = Mathf.Clamp01(_loaderBucket.MovementInput);
     }
+    public void DisableObjs()
+    {
+        _tooHighObj.SetActive(false);
+        _tooLowObj.SetActive(false);
 
+        _tooHighObj.GetComponent<RectTransform>().localScale = new Vector3(0, 1, 1);
+        _tooLowObj.GetComponent<RectTransform>().localScale = new Vector3(0, 1, 1);
+    }
     private void SampleBtn_fn()
     {
         float currentHeight = _loaderBucket.MovementInput;
@@ -110,6 +117,7 @@ public class SamplingUI : MonoBehaviour
         else
         {
             _correctHeightObj.SetActive(true);
+            _correctHeightObj.GetComponent<Button>().onClick.AddListener(MoveToCollectSampleSequence);
 
             LeanTween.delayedCall(3, () =>
             {

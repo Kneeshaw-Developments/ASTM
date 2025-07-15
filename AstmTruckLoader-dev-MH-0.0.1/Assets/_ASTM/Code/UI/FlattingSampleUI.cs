@@ -99,13 +99,18 @@ public class FlattingSampleUI : MonoBehaviour
 
         _movementInput = 0;
     }
+    public void DisableObjs()
+    {
+        _incorrectObj.SetActive(false);
 
+        _incorrectObj.GetComponent<RectTransform>().localScale = new Vector3(1, 0, 1);
+    }
     private void FlattenSampleBtn_fn()
     {
         if (_state == TruckPosState.Perfect)
         {
             _perfectObj.SetActive(true);
-
+            _perfectObj.GetComponent<Button>().onClick.AddListener(MoveToFlattenSequence);
             LeanTween.delayedCall(3, () =>
             {
                 _perfectObj.SetActive(false);
@@ -116,7 +121,7 @@ public class FlattingSampleUI : MonoBehaviour
         else if (_state == TruckPosState.Correct)
         {
             _correctObj.SetActive(true);
-
+            _correctObj.GetComponent<Button>().onClick.AddListener(MoveToFlattenSequence);
             LeanTween.delayedCall(3, () =>
             {
                 _correctObj.SetActive(false);
