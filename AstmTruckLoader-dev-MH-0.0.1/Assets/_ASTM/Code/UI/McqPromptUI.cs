@@ -56,6 +56,7 @@ public class McqPromptUI : MonoBehaviour
     {
         gameObject.SetActive(false);
         GameController.Instance.GetUiControllerRef.ActivateSamplingState();
+
     }
 }
 
