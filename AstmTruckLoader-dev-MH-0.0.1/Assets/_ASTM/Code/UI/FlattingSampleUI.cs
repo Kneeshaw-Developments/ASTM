@@ -105,13 +105,18 @@ public class FlattingSampleUI : MonoBehaviour
 
         _movementInput = 0;
     }
+    public void DisableObjs()
+    {
+        _incorrectObj.SetActive(false);
 
+        _incorrectObj.GetComponent<RectTransform>().localScale = new Vector3(1, 0, 1);
+    }
     private void FlattenSampleBtn_fn()
     {
         if (_playbackTime >= 0.51 && _playbackTime <= 0.55)
         {
             _perfectObj.SetActive(true);
-
+            _perfectObj.GetComponent<Button>().onClick.AddListener(MoveToFlattenSequence);
             LeanTween.delayedCall(3, () =>
             {
                 _perfectObj.SetActive(false);
@@ -122,7 +127,7 @@ public class FlattingSampleUI : MonoBehaviour
         else if (_playbackTime >= 0.45 && _playbackTime <= 0.6)
         {
             _correctObj.SetActive(true);
-
+            _correctObj.GetComponent<Button>().onClick.AddListener(MoveToFlattenSequence);
             LeanTween.delayedCall(3, () =>
             {
                 _correctObj.SetActive(false);

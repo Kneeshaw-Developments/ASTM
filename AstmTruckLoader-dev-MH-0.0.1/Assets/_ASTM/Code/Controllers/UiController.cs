@@ -108,7 +108,7 @@ public class UiController : MonoBehaviour
     }
     private void SettingsBtn_fn()
     {
-        Time.timeScale = 0f;
+        // Time.timeScale = 0f;
         _settingsUI.SetActive(true);
     }
     private void ResumeBtn_fn()
@@ -335,6 +335,7 @@ public class UiController : MonoBehaviour
     public void DeactivateErrorSampleUI()
     {
         _errorSamplingUI.SetActive(false);
+        _errorSamplingUI.GetComponent<CanvasGroup>().alpha = 0;
     }
 
 }
