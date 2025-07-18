@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
-using UnityEditor;
 public class LoaderUpDown : MonoBehaviour
 {
     [Header("Animator")]
