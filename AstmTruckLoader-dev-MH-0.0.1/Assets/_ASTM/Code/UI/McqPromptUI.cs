@@ -29,34 +29,25 @@ public class McqPromptUI : MonoBehaviour
     {
         foreach (Option option in _options)
         {
-            option.IToggle.onValueChanged.RemoveAllListeners();
-            option.IToggle.onValueChanged.AddListener((value) => { OptionBtn_fn(option, value); });
+            option.IBtn.onClick.RemoveAllListeners();
+            option.IBtn.onClick.AddListener(() => { OptionBtn_fn(option); });
         }
     }
-    private void OptionBtn_fn(Option option, bool value)
+    private void OptionBtn_fn(Option option)
     {
-        _wrongObj.GetComponent<RectTransform>().localScale = new Vector3(1, 0, 1);
-        _wrongObj.SetActive(false);
-        _correctObj.SetActive(false);
-
-        if (!value)
-        {
-            return;
-        }
-
         bool correct = option.ICorrect;
 
         _correctObj.SetActive(correct);
         _wrongObj.SetActive(!correct);
-        
-        if (correct)
+
+        LeanTween.delayedCall(3, () =>
         {
-            _correctObj.GetComponent<Button>().onClick.AddListener(MoveToSamplingSequence);
-            LeanTween.delayedCall(3, () =>
-            {
+            _correctObj.SetActive(false);
+            _wrongObj.SetActive(false);
+
+            if (correct)
                 MoveToSamplingSequence();
-            });
-        }
+        });
     }
 
     #endregion
@@ -72,6 +63,6 @@ public class McqPromptUI : MonoBehaviour
 [System.Serializable]
 public class Option
 {
-    public Toggle IToggle;
+    public Button IBtn;
     public bool ICorrect = false;
 }

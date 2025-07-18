@@ -9,6 +9,31 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: 02 - Default
     second: {fileID: 2100000, guid: 83db4b0fdd7166347aacd50742c65d51, type: 2}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: D979_MetalBucket_MetalBucket_BaseColor
+    second: {fileID: 2800000, guid: e895c0f77ced4c643a8827680d7f1136, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: D979_MetalBucket_MetalBucket_Height
+    second: {fileID: 2800000, guid: 4b1e8659ef6bc2640901b2729cf862f1, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: D979_MetalBucket_MetalBucket_Metallic
+    second: {fileID: 2800000, guid: 8b6a8578abb58e74a97043cb7ed22ad6, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: D979_MetalBucket_MetalBucket_Normal
+    second: {fileID: 2800000, guid: 41fb58e8a72b4e94098a4d813fead806, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: D979_MetalBucket_MetalBucket_Roughness
+    second: {fileID: 2800000, guid: 3538982661ee8b348aa4e9baf168250d, type: 3}
   materials:
     materialImportMode: 2
     materialName: 0

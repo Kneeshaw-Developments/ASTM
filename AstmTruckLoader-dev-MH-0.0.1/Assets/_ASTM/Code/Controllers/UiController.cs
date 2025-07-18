@@ -7,6 +7,7 @@ using WSMGameStudio.Vehicles;
 using System.Collections;
 using System.Xml.Linq;
 
+
 public class UiController : MonoBehaviour
 {
     #region Setters/Private Variables
@@ -55,6 +56,7 @@ public class UiController : MonoBehaviour
     [SerializeField] private GameObject _activateStock;
     [SerializeField] private GameObject _wheelLoader;
     [SerializeField] private GameObject _PileMound;
+    [SerializeField] private GameObject _left,_right,_top,_bottom;
 
     public AudioSource engineSfx;
 
@@ -108,7 +110,7 @@ public class UiController : MonoBehaviour
     }
     private void SettingsBtn_fn()
     {
-        // Time.timeScale = 0f;
+        Time.timeScale = 0f;
         _settingsUI.SetActive(true);
     }
     private void ResumeBtn_fn()
@@ -146,7 +148,6 @@ public class UiController : MonoBehaviour
         _tooLowCamera.SetActive(false);
         _collectedSampleCamera.SetActive(false);
         _samplingCamera.SetActive(true);
-        _PileMound.SetActive(false);
         _samplingUI.SetActive(true);
 
         _scrapedMudPatchObj.SetActive(false);
@@ -192,9 +193,10 @@ public class UiController : MonoBehaviour
                 _collectedSampleCamera.SetActive(true);
             });
 
-            LeanTween.delayedCall(2, () => 
+            LeanTween.delayedCall(5, () => 
             {
                 //_vehicleController.IsEngineOn = false;
+                _PileMound.SetActive(false);
             });
 
         });
@@ -208,9 +210,24 @@ public class UiController : MonoBehaviour
     }
     private IEnumerator WaitAndActivateStock()
     {
-        yield return new WaitForSeconds(33.2f);
+        yield return new WaitForSeconds(31.2f);
 
-        _activateStock.gameObject.SetActive(true);
+        // _activateStock.gameObject.SetActive(true);
+        ShowStockFromBottom();
+      
+    }
+    void ShowStockFromBottom()
+    {
+        // Set start position (2 units below)
+        Vector3 finalPos = _activateStock.transform.position;
+        Vector3 startPos = finalPos + new Vector3(0f, -2f, 0f);
+        _activateStock.transform.position = startPos;
+
+        // Activate the GameObject
+        _activateStock.SetActive(true);
+
+        // Move up
+        LeanTween.move(_activateStock, finalPos, 2.5f).setEase(LeanTweenType.easeOutCubic);
     }
     public void ActivateStockPileState(StockPileHotspotItem stockPileHotspot)
     {
@@ -295,22 +312,31 @@ public class UiController : MonoBehaviour
         string keyAnim = "";
         Debug.LogError(keyAnim);
         if (pilePickerId == PilePickerId.Left)
+        {
             keyAnim = "LeftSampleCollection";
+        }
         else if (pilePickerId == PilePickerId.Right)
+        {
             keyAnim = "RightSampleCollection";
-        else if(pilePickerId == PilePickerId.Upper)
+        }
+        else if (pilePickerId == PilePickerId.Upper)
+        {
             keyAnim = "UpperSampleCollection";
+        }
         else
+        {
             keyAnim = "BottomSampleCollection";
-
+        }
+        StartCoroutine(WaitAndActivatePile(keyAnim));
         _shovelAnim.SetBool(keyAnim, true);
 
         _bucketShovelCamera.SetActive(true);
         _shovelAnim.SetBool("FlatStockPile", false);
 
-        LeanTween.delayedCall(2f, () =>
+        LeanTween.delayedCall(4f, () =>
         {
-            _shovelAnim.SetBool(keyAnim, false);
+              _shovelAnim.SetBool(keyAnim, false);
+          //  StartCoroutine(WaitAndActivatePile(keyAnim));
             pile.transform.parent.gameObject.SetActive(false);
 
             _samplesInBucket[_bucketSamplesCount].SetActive(true);
@@ -328,6 +354,29 @@ public class UiController : MonoBehaviour
         });
     }
 
+    private IEnumerator WaitAndActivatePile(string keyAnim)
+    {
+        yield return new WaitForSeconds(3.2f);
+
+        if (keyAnim == "LeftSampleCollection")
+        {
+            _left.gameObject.SetActive(false);
+        }
+        else if (keyAnim == "RightSampleCollection")
+        {
+            _right.gameObject.SetActive(false);
+        }
+        else if (keyAnim == "UpperSampleCollection")
+        {
+            _top.gameObject.SetActive(false);
+        }
+        else
+        {
+            _bottom.gameObject.SetActive(false);
+        }
+
+    }
+
     public void ActiveErrorSampleUI()
     {
         _errorSamplingUI.SetActive(true);
@@ -335,7 +384,6 @@ public class UiController : MonoBehaviour
     public void DeactivateErrorSampleUI()
     {
         _errorSamplingUI.SetActive(false);
-        _errorSamplingUI.GetComponent<CanvasGroup>().alpha = 0;
     }
 
 }
