@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 using UnityEngine.UI;
 
 public class FlattingSampleUI : MonoBehaviour
@@ -41,15 +40,10 @@ public class FlattingSampleUI : MonoBehaviour
     private void Start()
     {
         RegisterButtonEvents();
-        // Play and pause immediately at the start
-        _truckAnimator.Play(_animationStateName, 0, 0f);
-        _truckAnimator.speed = 0f;
     }
-
 
     private void Update()
     {
-        Debug.Log(_playbackTime);
         if (_forwardBtnDown)
         {
             _movementInput += _moveSpeed * Time.deltaTime;
@@ -105,13 +99,18 @@ public class FlattingSampleUI : MonoBehaviour
 
         _movementInput = 0;
     }
+    public void DisableObjs()
+    {
+        _incorrectObj.SetActive(false);
 
+        _incorrectObj.GetComponent<RectTransform>().localScale = new Vector3(1, 0, 1);
+    }
     private void FlattenSampleBtn_fn()
     {
-        if (_playbackTime >= 0.51 && _playbackTime <= 0.55)
+        if (_state == TruckPosState.Perfect)
         {
             _perfectObj.SetActive(true);
-
+            _perfectObj.GetComponent<Button>().onClick.AddListener(MoveToFlattenSequence);
             LeanTween.delayedCall(3, () =>
             {
                 _perfectObj.SetActive(false);
@@ -119,10 +118,10 @@ public class FlattingSampleUI : MonoBehaviour
                 MoveToFlattenSequence();
             });
         }
-        else if (_playbackTime >= 0.45 && _playbackTime <= 0.6)
+        else if (_state == TruckPosState.Correct)
         {
             _correctObj.SetActive(true);
-
+            _correctObj.GetComponent<Button>().onClick.AddListener(MoveToFlattenSequence);
             LeanTween.delayedCall(3, () =>
             {
                 _correctObj.SetActive(false);
@@ -140,38 +139,6 @@ public class FlattingSampleUI : MonoBehaviour
 
             });
         }
-        /*  if (_state == TruckPosState.Perfect)
-          {
-              _perfectObj.SetActive(true);
-
-              LeanTween.delayedCall(3, () =>
-              {
-                  _perfectObj.SetActive(false);
-
-                  MoveToFlattenSequence();
-              });
-          }
-          else if (_state == TruckPosState.Correct)
-          {
-              _correctObj.SetActive(true);
-
-              LeanTween.delayedCall(3, () =>
-              {
-                  _correctObj.SetActive(false);
-
-                  MoveToFlattenSequence();
-              });
-          }
-          else
-          {
-              _incorrectObj.SetActive(true);
-
-              LeanTween.delayedCall(3, () =>
-              {
-                  _incorrectObj.SetActive(false);
-
-              });
-          }*/
     }
 
     #endregion
@@ -214,84 +181,6 @@ public class FlattingSampleUI : MonoBehaviour
         gameObject.SetActive(false);
 
         GameController.Instance.GetUiControllerRef.ActivateFlattenState();
-    }
-
-
-
-
-
-    [Header("Animator")]
-    [SerializeField] private Animator _truckAnimator;
-
-    [Header("Animation State Name")]
-    [SerializeField] private string _animationStateName = "Adjustloader"; // your animation clip name
-
-    private float _savedTime = 0f;
-    private bool _isReversing = false;
-    private float _playbackTime = 0.1f;
-    private float _animSpeed = 0.5f;
-
-
-    public void OnUpButtonDown()
-    {
-        StartCoroutine(PlayForward());
-    }
-
-    public void OnDownButtonDown()
-    {
-        StartCoroutine(PlayBackward());
-    }
-
-    public void OnUpButtonUp()
-    {
-        StopAllCoroutines();
-    }
-
-    public void OnDownButtonUp()
-    {
-        StopAllCoroutines();
-    }
-
-    private IEnumerator PlayForward()
-    {
-        while (_playbackTime < 1f)
-        {
-            _playbackTime += (_animSpeed * Time.deltaTime) / _truckAnimator.GetCurrentAnimatorClipInfo(0)[0].clip.length;
-            _truckAnimator.Play(_animationStateName, 0, _playbackTime);
-            yield return null;
-        }
-    }
-
-    private IEnumerator PlayBackward()
-    {
-
-        while (_playbackTime > -0.1f)
-        {
-            if (_playbackTime <= 0)
-            {
-                _playbackTime = 0;
-            }
-
-            _playbackTime -= (_animSpeed * Time.deltaTime) / _truckAnimator.GetCurrentAnimatorClipInfo(0)[0].clip.length;
-            _truckAnimator.Play(_animationStateName, 0, _playbackTime);
-            yield return null;
-        }
-
-    }
-    public void TakeSample()
-    {
-        if (_playbackTime >= 0.13 && _playbackTime <= 0.23)
-        {
-            Debug.Log("Corect");
-        }
-        else if (_playbackTime <= 0.08)
-        {
-            Debug.LogWarning("Too low");
-        }
-        else
-        {
-            Debug.LogError("wrong");
-        }
     }
 }
 

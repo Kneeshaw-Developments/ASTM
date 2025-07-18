@@ -4,8 +4,6 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using WSMGameStudio.HeavyMachinery;
 using WSMGameStudio.Vehicles;
-using System.Collections;
-using System.Xml.Linq;
 
 public class UiController : MonoBehaviour
 {
@@ -51,16 +49,9 @@ public class UiController : MonoBehaviour
     [SerializeField] private GameObject _shovelObj;
     [SerializeField] private GameObject _higlightPileObj;
     [SerializeField] private GameObject[] _samplesInBucket;
-    [SerializeField] private GameObject _stockPileHotspotItem;
-    [SerializeField] private GameObject _activateStock;
-    [SerializeField] private GameObject _wheelLoader;
-    [SerializeField] private GameObject _PileMound;
-
-    public AudioSource engineSfx;
 
     [Header("Animator")]
     [SerializeField] private Animator _gamePlayAnim;
-    [SerializeField] private Animator _shovelAnim;
 
 
     private int _bucketSamplesCount = 0;
@@ -108,7 +99,7 @@ public class UiController : MonoBehaviour
     }
     private void SettingsBtn_fn()
     {
-        Time.timeScale = 0f;
+        // Time.timeScale = 0f;
         _settingsUI.SetActive(true);
     }
     private void ResumeBtn_fn()
@@ -146,7 +137,7 @@ public class UiController : MonoBehaviour
         _tooLowCamera.SetActive(false);
         _collectedSampleCamera.SetActive(false);
         _samplingCamera.SetActive(true);
-        _PileMound.SetActive(false);
+
         _samplingUI.SetActive(true);
 
         _scrapedMudPatchObj.SetActive(false);
@@ -171,22 +162,15 @@ public class UiController : MonoBehaviour
     public void ActivateCollectSampleState()
     {
         _vehicleController.engineSFX.volume = 0.3f;
-    //    _vehicleController.IsEngineOn = true;
-        if (engineSfx != null && !engineSfx.isPlaying)
-        {
-            engineSfx.Play();
-       
-        }
+        _vehicleController.IsEngineOn = true;
 
         LeanTween.delayedCall(1, () =>
         {
             _gamePlayAnim.SetBool("CollectSample", true);
-            StartCoroutine(WaitAndActivateStockPile());
-            StartCoroutine(WaitAndActivateStock());
-            _gamePlayAnim.speed = 1f; // Resume normal speed
+
             LeanTween.delayedCall(1.5f, () =>
             {
-               // _vehicleController.IsEngineOn = false;
+                _vehicleController.IsEngineOn = false;
 
                 _samplingCamera.SetActive(false);
                 _collectedSampleCamera.SetActive(true);
@@ -194,23 +178,11 @@ public class UiController : MonoBehaviour
 
             LeanTween.delayedCall(2, () => 
             {
-                //_vehicleController.IsEngineOn = false;
+                _vehicleController.IsEngineOn = false;
             });
 
         });
 
-    }
-    private IEnumerator WaitAndActivateStockPile()
-    {
-        yield return new WaitForSeconds(30f);
-
-        GameController.Instance.GetUiControllerRef.ActivateStockPileState(_stockPileHotspotItem.GetComponent<StockPileHotspotItem>());
-    }
-    private IEnumerator WaitAndActivateStock()
-    {
-        yield return new WaitForSeconds(33.2f);
-
-        _activateStock.gameObject.SetActive(true);
     }
     public void ActivateStockPileState(StockPileHotspotItem stockPileHotspot)
     {
@@ -224,8 +196,8 @@ public class UiController : MonoBehaviour
         {
             _loaderBucket.MovementInput = 0.2f;
 
-          //  _gamePlayAnim.SetBool("CreateStockPile", true);
-          //  _gamePlayAnim.SetBool("CollectSample", false);
+            _gamePlayAnim.SetBool("CreateStockPile", true);
+            _gamePlayAnim.SetBool("CollectSample", false);
         });
 
         LeanTween.delayedCall(5, () => 
@@ -235,37 +207,24 @@ public class UiController : MonoBehaviour
             _stockPileCamera.SetActive(false);
             _flattenSampleCamera.SetActive(true);
 
-         //   _gamePlayAnim.enabled = false;
+            _gamePlayAnim.enabled = false;
             _flattenSamplingUI.SetActive(true);
-            _wheelLoader.gameObject.SetActive(false);
-        //    engineSfx.Stop();
         });
     }
     public void ActivateFlattenState()
     {
-        if (engineSfx != null && !engineSfx.isPlaying)
-        {
-            engineSfx.Play();
-        }
-
         _flattenSampleCamera.SetActive(false);
         _flatStockPileCamera.SetActive(true);
 
         _gamePlayAnim.enabled = true;
 
         _gamePlayAnim.SetBool("FlatStockPile", true);
-        _gamePlayAnim.speed = 1f; // Resume normal speed
-        // _gamePlayAnim.SetBool("CreateStockPile", false);
-        LeanTween.scale(_activateStock, new Vector3(1f, 1f, 1f), 5.5f);
-      
+        _gamePlayAnim.SetBool("CreateStockPile", false);
+
         LeanTween.delayedCall(5f, () =>
         {
             _flatStockPileCamera.SetActive(false);
             _bucketShovelCamera.SetActive(true);
-            _stockPilePatch1Obj.SetActive(true);
-          //  LeanTween.scale(_activateStock, new Vector3(1f, 1f, 1f), 5.5f);
-            _gamePlayAnim.gameObject.SetActive(false);
-
         });
 
         LeanTween.delayedCall(5.7f, () => 
@@ -275,17 +234,12 @@ public class UiController : MonoBehaviour
 
         LeanTween.delayedCall(7f, () =>
         {
-            _activateStock.gameObject.SetActive(false);
             GameManager.Instance?.StopFadeTransitions();
             GameManager.Instance?.DoFadeIn();
 
             _shovelObj.SetActive(true);
             _bucketObj.SetActive(true);
             _higlightPileObj.SetActive(true);
-            engineSfx.Stop();
-            //   _activateStock.SetActive(false);
-
-
         });
     }
 
@@ -293,7 +247,7 @@ public class UiController : MonoBehaviour
     public void PickPileSample(PilePickerId pilePickerId, PickPile pile)
     {
         string keyAnim = "";
-        Debug.LogError(keyAnim);
+
         if (pilePickerId == PilePickerId.Left)
             keyAnim = "LeftSampleCollection";
         else if (pilePickerId == PilePickerId.Right)
@@ -303,14 +257,14 @@ public class UiController : MonoBehaviour
         else
             keyAnim = "BottomSampleCollection";
 
-        _shovelAnim.SetBool(keyAnim, true);
+        _gamePlayAnim.SetBool(keyAnim, true);
 
         _bucketShovelCamera.SetActive(true);
-        _shovelAnim.SetBool("FlatStockPile", false);
+        _gamePlayAnim.SetBool("FlatStockPile", false);
 
         LeanTween.delayedCall(2f, () =>
         {
-            _shovelAnim.SetBool(keyAnim, false);
+            _gamePlayAnim.SetBool(keyAnim, false);
             pile.transform.parent.gameObject.SetActive(false);
 
             _samplesInBucket[_bucketSamplesCount].SetActive(true);
@@ -335,6 +289,7 @@ public class UiController : MonoBehaviour
     public void DeactivateErrorSampleUI()
     {
         _errorSamplingUI.SetActive(false);
+        _errorSamplingUI.GetComponent<CanvasGroup>().alpha = 0;
     }
 
 }
