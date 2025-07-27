@@ -15,7 +15,7 @@ public class McqPromptUI : MonoBehaviour
     #endregion
 
     #region Unity Methods
-    
+
     private void Start()
     {
         RegisterButtonEvents();
@@ -29,25 +29,34 @@ public class McqPromptUI : MonoBehaviour
     {
         foreach (Option option in _options)
         {
-            option.IBtn.onClick.RemoveAllListeners();
-            option.IBtn.onClick.AddListener(() => { OptionBtn_fn(option); });
+            option.IToggle.onValueChanged.RemoveAllListeners();
+            option.IToggle.onValueChanged.AddListener((value) => { OptionBtn_fn(option, value); });
         }
     }
-    private void OptionBtn_fn(Option option)
+    private void OptionBtn_fn(Option option, bool value)
     {
+        _wrongObj.GetComponent<RectTransform>().localScale = new Vector3(1, 0, 1);
+        _wrongObj.SetActive(false);
+        _correctObj.SetActive(false);
+
+        if (!value)
+        {
+            return;
+        }
+
         bool correct = option.ICorrect;
 
         _correctObj.SetActive(correct);
         _wrongObj.SetActive(!correct);
 
-        LeanTween.delayedCall(3, () =>
+        if (correct)
         {
-            _correctObj.SetActive(false);
-            _wrongObj.SetActive(false);
-
-            if (correct)
+            _correctObj.GetComponent<Button>().onClick.AddListener(MoveToSamplingSequence);
+            LeanTween.delayedCall(3, () =>
+            {
                 MoveToSamplingSequence();
-        });
+            });
+        }
     }
 
     #endregion
@@ -56,13 +65,12 @@ public class McqPromptUI : MonoBehaviour
     {
         gameObject.SetActive(false);
         GameController.Instance.GetUiControllerRef.ActivateSamplingState();
-
     }
 }
 
 [System.Serializable]
 public class Option
 {
-    public Button IBtn;
+    public Toggle IToggle;
     public bool ICorrect = false;
 }
