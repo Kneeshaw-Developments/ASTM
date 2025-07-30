@@ -8,7 +8,7 @@ namespace WSMGameStudio.Vehicles
     public class WSMVehicleController : MonoBehaviour
     {
         #region VARIABLES AND PROPERTIES
-
+        
         private const float _mphConversion = 2.23694f;
         private const float _kphConversion = 3.6f;
 
@@ -709,10 +709,10 @@ namespace WSMGameStudio.Vehicles
                 // Truck and machinery reverse warning
                 if (backUpBeeperSFX != null)
                 {
-                    if (_movingBackwards && !backUpBeeperSFX.isPlaying)
+                   /* if (_movingBackwards && !backUpBeeperSFX.isPlaying)
                         backUpBeeperSFX.Play();
                     else if (!_movingBackwards && backUpBeeperSFX.isPlaying)
-                        backUpBeeperSFX.Stop();
+                        backUpBeeperSFX.Stop();*/
                 }
 
                 if (signalLightsSFX != null)
@@ -842,7 +842,12 @@ namespace WSMGameStudio.Vehicles
                 if (engineStartSFX != null && !engineStartSFX.isPlaying)
                     engineStartSFX.Play();
                 if (engineSFX != null && !engineSFX.isPlaying)
+                {
                     engineSFX.Play();
+                    Debug.Log("start");
+                }
+                //    engineSFX.Play();
+
             }
         }
 

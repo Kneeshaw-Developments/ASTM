@@ -15,7 +15,7 @@ public class McqPromptUI : MonoBehaviour
     #endregion
 
     #region Unity Methods
-    
+
     private void Start()
     {
         RegisterButtonEvents();
@@ -48,7 +48,7 @@ public class McqPromptUI : MonoBehaviour
 
         _correctObj.SetActive(correct);
         _wrongObj.SetActive(!correct);
-        
+
         if (correct)
         {
             _correctObj.GetComponent<Button>().onClick.AddListener(MoveToSamplingSequence);
