@@ -818,7 +818,7 @@ PlayerSettings:
   webGLTemplate: APPLICATION:Default
   webGLAnalyzeBuildSize: 0
   webGLUseEmbeddedResources: 0
-  webGLCompressionFormat: 2
+  webGLCompressionFormat: 0
   webGLWasmArithmeticExceptions: 0
   webGLLinkerTarget: 1
   webGLThreadsSupport: 0
@@ -846,7 +846,7 @@ PlayerSettings:
     PS5: 
     QNX: 
     ReservedCFE: 
-    Standalone: 
+    Standalone: PMS_URP;PMS_CINEMACHINE;PMS_CINE_MACHINE_2_6_OR_NEWER;PMS_CINE_MACHINE_2_6_1_OR_NEWER;PMS_CINE_MACHINE_2_8_OR_NEWER;PMS_CINE_MACHINE_3_0_OR_NEWER
     VisionOS: 
     WebGL: PMS_URP;PMS_CINEMACHINE;PMS_CINE_MACHINE_2_6_OR_NEWER;PMS_CINE_MACHINE_2_6_1_OR_NEWER;PMS_CINE_MACHINE_2_8_OR_NEWER;PMS_CINE_MACHINE_3_0_OR_NEWER
     Windows Store Apps: 
@@ -870,6 +870,7 @@ PlayerSettings:
     PS5: 1
     QNX: 1
     ReservedCFE: 1
+    Standalone: 1
     VisionOS: 1
     WebGL: 1
     Windows Store Apps: 1
