@@ -7363,7 +7363,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Incorrect Height
+  m_text: Incorrect position
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 82383419fd2b52648b0a2730866e5b75, type: 2}
   m_sharedMaterial: {fileID: 4485325023700905042, guid: 82383419fd2b52648b0a2730866e5b75, type: 2}

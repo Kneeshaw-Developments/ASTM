@@ -310,7 +310,7 @@ public class UiController : MonoBehaviour
     public void PickPileSample(PilePickerId pilePickerId, PickPile pile)
     {
         string keyAnim = "";
-        Debug.LogError(keyAnim);
+//        Debug.LogError(keyAnim);
         if (pilePickerId == PilePickerId.Left)
         {
             keyAnim = "LeftSampleCollection";
