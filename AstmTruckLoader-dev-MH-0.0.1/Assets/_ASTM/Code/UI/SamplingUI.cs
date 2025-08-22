@@ -43,7 +43,7 @@ public class SamplingUI : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log(_playbackTime);
+        //Debug.Log(_playbackTime);
         if (_raiseBtnDown && _loaderBucket.MovementInput <= 0.99f)
         {
             _loaderBucket.MovementInput += _loaderMoveSpeed * Time.deltaTime;

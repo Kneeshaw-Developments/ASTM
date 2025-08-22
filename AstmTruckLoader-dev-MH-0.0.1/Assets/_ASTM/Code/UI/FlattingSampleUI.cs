@@ -49,7 +49,7 @@ public class FlattingSampleUI : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log(_playbackTime);
+       // Debug.Log(_playbackTime);
         if (_forwardBtnDown)
         {
             _movementInput += _moveSpeed * Time.deltaTime;

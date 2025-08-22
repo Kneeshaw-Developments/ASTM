@@ -8,7 +8,7 @@
   - Layers:
     - Default, TransparentFX, Ignore Raycast, Hover, Water, UI
 - Active game object:
-  - Name: Terrain
+  - Name: StockPilePatch
   - Tag: Untagged
-  - Layer: Default
+  - Layer: Hover
 <!-- UNITY CODE ASSIST INSTRUCTIONS END -->
