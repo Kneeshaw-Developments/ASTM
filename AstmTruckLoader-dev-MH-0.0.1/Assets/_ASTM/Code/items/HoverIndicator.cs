@@ -33,7 +33,7 @@ public class HoverIndicator : MonoBehaviour
             {
                 redCircle.SetActive(true);
                 redCircle.transform.position = p;
-                redCircle.transform.rotation = Quaternion.FromToRotation(Vector3.forward, hit.normal);
+                redCircle.transform.rotation = Quaternion.FromToRotation(Vector3.back, hit.normal);
 
                 // ⛔ REMOVE the offset/euler hacks — they desync gating vs where the cursor hit
                 // redCircle.transform.localPosition += new Vector3(-0.2f, 0, 0.2f);
