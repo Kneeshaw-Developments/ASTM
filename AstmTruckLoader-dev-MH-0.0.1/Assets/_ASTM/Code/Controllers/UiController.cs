@@ -52,12 +52,19 @@ public class UiController : MonoBehaviour
     [SerializeField] private GameObject _shovelObj;
     [SerializeField] private GameObject _higlightPileObj;
     [SerializeField] private GameObject[] _samplesInBucket;
-    
+
     [SerializeField] private GameObject _stockPileHotspotItem;
     [SerializeField] private GameObject _activateStock;
     [SerializeField] private GameObject _wheelLoader;
     [SerializeField] private GameObject _PileMound;
-    [SerializeField] private GameObject _left,_right,_top,_bottom;
+    [SerializeField] private GameObject _left, _right, _top, _bottom;
+
+    [Header("Instruction Tooltip")]
+    [SerializeField] private GameObject _instructionTooltipRoot;
+    [SerializeField] private TMPro.TextMeshProUGUI _instructionTooltipText; // optional
+    [SerializeField] private string _instructionTooltipMessage = "Click the center of each quarter to take a sample.";
+    private bool _instructionShown = false;
+
 
     public AudioSource engineSfx;
 
@@ -68,13 +75,13 @@ public class UiController : MonoBehaviour
 
     private int _bucketSamplesCount = 0;
     #endregion
-    #if UNITY_EDITOR || DEVELOPMENT_BUILD
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
     private void OnValidate()
     {
         if (_samplesInBucket == null || _samplesInBucket.Length == 0)
             Debug.LogWarning("[UiController] No bucket samples hooked up.");
     }
-    #endif
+#endif
 
     #region Unity Methods
 
@@ -141,7 +148,9 @@ public class UiController : MonoBehaviour
     }
 
     private void RetryBtn_fn()
-    {
+    {   HideInstructionTooltip();
+        _instructionShown = false;
+
         GameManager.Instance?.StopFadeTransitions();
         GameManager.Instance?.DoFadeIn();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -180,11 +189,11 @@ public class UiController : MonoBehaviour
     public void ActivateCollectSampleState()
     {
         _vehicleController.engineSFX.volume = 0.3f;
-    //    _vehicleController.IsEngineOn = true;
+        //    _vehicleController.IsEngineOn = true;
         if (engineSfx != null && !engineSfx.isPlaying)
         {
             engineSfx.Play();
-       
+
         }
 
         LeanTween.delayedCall(1, () =>
@@ -195,13 +204,13 @@ public class UiController : MonoBehaviour
             _gamePlayAnim.speed = 1f; // Resume normal speed
             LeanTween.delayedCall(1.5f, () =>
             {
-               // _vehicleController.IsEngineOn = false;
+                // _vehicleController.IsEngineOn = false;
 
                 _samplingCamera.SetActive(false);
                 _collectedSampleCamera.SetActive(true);
             });
 
-            LeanTween.delayedCall(5, () => 
+            LeanTween.delayedCall(5, () =>
             {
                 //_vehicleController.IsEngineOn = false;
                 _PileMound.SetActive(false);
@@ -222,7 +231,7 @@ public class UiController : MonoBehaviour
 
         // _activateStock.gameObject.SetActive(true);
         ShowStockFromBottom();
-      
+
     }
     void ShowStockFromBottom()
     {
@@ -249,21 +258,21 @@ public class UiController : MonoBehaviour
         {
             _loaderBucket.MovementInput = 0.2f;
 
-          //  _gamePlayAnim.SetBool("CreateStockPile", true);
-          //  _gamePlayAnim.SetBool("CollectSample", false);
+            //  _gamePlayAnim.SetBool("CreateStockPile", true);
+            //  _gamePlayAnim.SetBool("CollectSample", false);
         });
 
-        LeanTween.delayedCall(5, () => 
+        LeanTween.delayedCall(5, () =>
         {
             _loaderBucket.MovementInput = 0.25f;
 
             _stockPileCamera.SetActive(false);
             _flattenSampleCamera.SetActive(true);
 
-         //   _gamePlayAnim.enabled = false;
+            //   _gamePlayAnim.enabled = false;
             _flattenSamplingUI.SetActive(true);
             _wheelLoader.gameObject.SetActive(false);
-        //    engineSfx.Stop();
+            //    engineSfx.Stop();
         });
     }
     public void ActivateFlattenState()
@@ -282,18 +291,18 @@ public class UiController : MonoBehaviour
         _gamePlayAnim.speed = 1f; // Resume normal speed
         // _gamePlayAnim.SetBool("CreateStockPile", false);
         LeanTween.scale(_activateStock, new Vector3(1f, 1f, 1f), 5.5f);
-      
+
         LeanTween.delayedCall(5f, () =>
         {
             _flatStockPileCamera.SetActive(false);
             _bucketShovelCamera.SetActive(true);
             _stockPilePatch1Obj.SetActive(true);
-          //  LeanTween.scale(_activateStock, new Vector3(1f, 1f, 1f), 5.5f);
+            //  LeanTween.scale(_activateStock, new Vector3(1f, 1f, 1f), 5.5f);
             _gamePlayAnim.gameObject.SetActive(false);
 
         });
 
-        LeanTween.delayedCall(5.7f, () => 
+        LeanTween.delayedCall(5.7f, () =>
         {
             _stockPilePatch1Obj.SetActive(true);
         });
@@ -310,54 +319,57 @@ public class UiController : MonoBehaviour
             engineSfx.Stop();
             //   _activateStock.SetActive(false);
 
-
+            ShowInstructionTooltip();
         });
     }
 
 
     public void PickPileSample(PilePickerId pilePickerId, PickPile pile)
-{
-    GameController.Instance.canInteract = false;
-
-    string keyAnim =
-        pilePickerId == PilePickerId.Left   ? "LeftSampleCollection"   :
-        pilePickerId == PilePickerId.Right  ? "RightSampleCollection"  :
-        pilePickerId == PilePickerId.Upper  ? "UpperSampleCollection"  :
-                                              "BottomSampleCollection";
-
-    // EXCLUSIVE: clear all, then set one
-    _shovelAnim.SetBool("LeftSampleCollection",   false);
-    _shovelAnim.SetBool("RightSampleCollection",  false);
-    _shovelAnim.SetBool("UpperSampleCollection",  false);
-    _shovelAnim.SetBool("BottomSampleCollection", false);
-    _shovelAnim.SetBool(keyAnim, true);
-
-    _bucketShovelCamera.SetActive(true);
-    _shovelAnim.SetBool("FlatStockPile", false);
-
-    // ⛔ Remove/Comment this: StartCoroutine(WaitAndActivatePile(keyAnim));
-
-    LeanTween.delayedCall(4f, () =>
     {
-        _shovelAnim.SetBool(keyAnim, false);
+        GameController.Instance.canInteract = false;
 
-        // Hide ONLY what was actually clicked
-        if (pile && pile.transform && pile.transform.parent)
-            pile.transform.parent.gameObject.SetActive(false);
+        string keyAnim =
+            pilePickerId == PilePickerId.Left ? "LeftSampleCollection" :
+            pilePickerId == PilePickerId.Right ? "RightSampleCollection" :
+            pilePickerId == PilePickerId.Upper ? "UpperSampleCollection" :
+                                                  "BottomSampleCollection";
 
-        // Bucket fill (bounds-safe)
-        if (_bucketSamplesCount >= 0 && _bucketSamplesCount < _samplesInBucket.Length)
+        // EXCLUSIVE: clear all, then set one
+        _shovelAnim.SetBool("LeftSampleCollection", false);
+        _shovelAnim.SetBool("RightSampleCollection", false);
+        _shovelAnim.SetBool("UpperSampleCollection", false);
+        _shovelAnim.SetBool("BottomSampleCollection", false);
+        _shovelAnim.SetBool(keyAnim, true);
+
+        _bucketShovelCamera.SetActive(true);
+        _shovelAnim.SetBool("FlatStockPile", false);
+
+        // ⛔ Remove/Comment this: StartCoroutine(WaitAndActivatePile(keyAnim));
+
+        LeanTween.delayedCall(4f, () =>
         {
-            _samplesInBucket[_bucketSamplesCount].SetActive(true);
-            _bucketSamplesCount++;
-        }
+            _shovelAnim.SetBool(keyAnim, false);
 
-        if (_bucketSamplesCount >= _samplesInBucket.Length)
-            _winUI.SetActive(true);
-        else
-            GameController.Instance.canInteract = true;
-    });
-}
+            // Hide ONLY what was actually clicked
+            if (pile && pile.transform && pile.transform.parent)
+                pile.transform.parent.gameObject.SetActive(false);
+
+            // Bucket fill (bounds-safe)
+            if (_bucketSamplesCount >= 0 && _bucketSamplesCount < _samplesInBucket.Length)
+            {
+                _samplesInBucket[_bucketSamplesCount].SetActive(true);
+                _bucketSamplesCount++;
+            }
+
+            if (_bucketSamplesCount >= _samplesInBucket.Length)
+            {
+                HideInstructionTooltip();
+                _winUI.SetActive(true);
+            }
+            else
+                GameController.Instance.canInteract = true;
+        });
+    }
 
 
     private IEnumerator WaitAndActivatePile(string keyAnim)
@@ -391,5 +403,20 @@ public class UiController : MonoBehaviour
     {
         _errorSamplingUI.SetActive(false);
     }
+    private void ShowInstructionTooltip(string overrideText = null)
+    {
+        if (_instructionTooltipRoot == null || _instructionShown) return;
+        if (_instructionTooltipText != null)
+            _instructionTooltipText.text = string.IsNullOrEmpty(overrideText) ? _instructionTooltipMessage : overrideText;
+        _instructionTooltipRoot.SetActive(true);
+        _instructionShown = true;
+    }
+
+    private void HideInstructionTooltip()
+    {
+        if (_instructionTooltipRoot == null) return;
+        _instructionTooltipRoot.SetActive(false);
+    }
+
 
 }

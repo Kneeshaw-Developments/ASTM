@@ -8,7 +8,7 @@
   - Layers:
     - Default, TransparentFX, Ignore Raycast, Hover, Water, UI
 - Active game object:
-  - Name: RedCircle
+  - Name: DigTutorial
   - Tag: Untagged
-  - Layer: Hover
+  - Layer: UI
 <!-- UNITY CODE ASSIST INSTRUCTIONS END -->
