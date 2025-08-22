@@ -52,6 +52,7 @@ public class UiController : MonoBehaviour
     [SerializeField] private GameObject _shovelObj;
     [SerializeField] private GameObject _higlightPileObj;
     [SerializeField] private GameObject[] _samplesInBucket;
+    
     [SerializeField] private GameObject _stockPileHotspotItem;
     [SerializeField] private GameObject _activateStock;
     [SerializeField] private GameObject _wheelLoader;
@@ -67,6 +68,13 @@ public class UiController : MonoBehaviour
 
     private int _bucketSamplesCount = 0;
     #endregion
+    #if UNITY_EDITOR || DEVELOPMENT_BUILD
+    private void OnValidate()
+    {
+        if (_samplesInBucket == null || _samplesInBucket.Length == 0)
+            Debug.LogWarning("[UiController] No bucket samples hooked up.");
+    }
+    #endif
 
     #region Unity Methods
 
@@ -308,51 +316,49 @@ public class UiController : MonoBehaviour
 
 
     public void PickPileSample(PilePickerId pilePickerId, PickPile pile)
+{
+    GameController.Instance.canInteract = false;
+
+    string keyAnim =
+        pilePickerId == PilePickerId.Left   ? "LeftSampleCollection"   :
+        pilePickerId == PilePickerId.Right  ? "RightSampleCollection"  :
+        pilePickerId == PilePickerId.Upper  ? "UpperSampleCollection"  :
+                                              "BottomSampleCollection";
+
+    // EXCLUSIVE: clear all, then set one
+    _shovelAnim.SetBool("LeftSampleCollection",   false);
+    _shovelAnim.SetBool("RightSampleCollection",  false);
+    _shovelAnim.SetBool("UpperSampleCollection",  false);
+    _shovelAnim.SetBool("BottomSampleCollection", false);
+    _shovelAnim.SetBool(keyAnim, true);
+
+    _bucketShovelCamera.SetActive(true);
+    _shovelAnim.SetBool("FlatStockPile", false);
+
+    // ⛔ Remove/Comment this: StartCoroutine(WaitAndActivatePile(keyAnim));
+
+    LeanTween.delayedCall(4f, () =>
     {
-        string keyAnim = "";
-//        Debug.LogError(keyAnim);
-        if (pilePickerId == PilePickerId.Left)
-        {
-            keyAnim = "LeftSampleCollection";
-        }
-        else if (pilePickerId == PilePickerId.Right)
-        {
-            keyAnim = "RightSampleCollection";
-        }
-        else if (pilePickerId == PilePickerId.Upper)
-        {
-            keyAnim = "UpperSampleCollection";
-        }
-        else
-        {
-            keyAnim = "BottomSampleCollection";
-        }
-        StartCoroutine(WaitAndActivatePile(keyAnim));
-        _shovelAnim.SetBool(keyAnim, true);
+        _shovelAnim.SetBool(keyAnim, false);
 
-        _bucketShovelCamera.SetActive(true);
-        _shovelAnim.SetBool("FlatStockPile", false);
-
-        LeanTween.delayedCall(4f, () =>
-        {
-              _shovelAnim.SetBool(keyAnim, false);
-          //  StartCoroutine(WaitAndActivatePile(keyAnim));
+        // Hide ONLY what was actually clicked
+        if (pile && pile.transform && pile.transform.parent)
             pile.transform.parent.gameObject.SetActive(false);
 
+        // Bucket fill (bounds-safe)
+        if (_bucketSamplesCount >= 0 && _bucketSamplesCount < _samplesInBucket.Length)
+        {
             _samplesInBucket[_bucketSamplesCount].SetActive(true);
-
             _bucketSamplesCount++;
+        }
 
-            if(_bucketSamplesCount >= _samplesInBucket.Length)
-            {
-                _winUI.SetActive(true);
-            }
-            else
-            {
-                GameController.Instance.canInteract = true;
-            }
-        });
-    }
+        if (_bucketSamplesCount >= _samplesInBucket.Length)
+            _winUI.SetActive(true);
+        else
+            GameController.Instance.canInteract = true;
+    });
+}
+
 
     private IEnumerator WaitAndActivatePile(string keyAnim)
     {
