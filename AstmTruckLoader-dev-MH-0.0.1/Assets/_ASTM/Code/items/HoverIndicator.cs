@@ -16,34 +16,35 @@ public class HoverIndicator : MonoBehaviour
 
     void Update()
     {
-        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        var cam = mainCamera != null ? mainCamera : Camera.main;
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, 100f, hoverLayer))
+        if (Physics.Raycast(ray, out hit, 100f, hoverLayer, QueryTriggerInteraction.Collide))
         {
             GameController.Instance.canPickPile = true;
 
-            redCircle.SetActive(true);
-            redCircle.transform.position = hit.point;
-            redCircle.transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
+            // Use the ACTUAL hit point for gating, not the redCircle's (which you offset later)
+            Vector3 p = hit.point;
+            bool inside = Vector3.Distance(p, midPoint.position) <= stockPileAreaDistance;
+            GameController.Instance.inStockPileArea = !inside;  // inside = OK → false (no error); outside = error → true
 
-            redCircle.transform.localPosition += new Vector3(-0.2f, 0, 0.2f);
-            redCircle.transform.localEulerAngles = new Vector3(0, redCircle.transform.localEulerAngles.y, redCircle.transform.localEulerAngles.z);
-
-            if(Vector3.Distance(redCircle.transform.position, midPoint.transform.position) <= stockPileAreaDistance)
+            if (redCircle != null)
             {
-                GameController.Instance.inStockPileArea = false;
-            }
-            else
-            {
-                GameController.Instance.inStockPileArea = true;
+                redCircle.SetActive(true);
+                redCircle.transform.position = p;
+                redCircle.transform.rotation = Quaternion.FromToRotation(Vector3.forward, hit.normal);
 
+                // ⛔ REMOVE the offset/euler hacks — they desync gating vs where the cursor hit
+                // redCircle.transform.localPosition += new Vector3(-0.2f, 0, 0.2f);
+                // redCircle.transform.localEulerAngles = new Vector3(0, redCircle.transform.localEulerAngles.y, redCircle.transform.localEulerAngles.z);
             }
         }
         else
         {
             GameController.Instance.canPickPile = false;
-            redCircle.SetActive(false);
+            if (redCircle != null) redCircle.SetActive(false);
         }
     }
+
 }

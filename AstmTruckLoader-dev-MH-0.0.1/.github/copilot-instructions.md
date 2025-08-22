@@ -8,7 +8,7 @@
   - Layers:
     - Default, TransparentFX, Ignore Raycast, Hover, Water, UI
 - Active game object:
-  - Name: StockPilePatch
+  - Name: RedCircle
   - Tag: Untagged
   - Layer: Hover
 <!-- UNITY CODE ASSIST INSTRUCTIONS END -->
